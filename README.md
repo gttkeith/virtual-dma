@@ -9,9 +9,9 @@ Create customised virtual orderbooks, test trades and algos in a fully manipulab
 
 VirtualDMA's OrderBook implementation runs as a server instance on your machine. Simply connect to the opened port and send FIX messages as if it were a standard FIX hub.
 
-An example of a sample login and the resulting ack, on port 4206:
+An example of a login and the resulting ack, on port 4206:
 
-```bash
+```
 T2-MBP% telnet localhost 4206
 Trying 127.0.0.1...
 Connected to localhost.
