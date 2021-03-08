@@ -12,7 +12,7 @@ MAX_CONNECTIONS = 1
 
 pending_msgs = []
 received = []
-logged_in = []
+logged_in = {}
 
 async def receive():
     s = ''
@@ -42,17 +42,19 @@ async def execute_fix(s):
             if k == BODY_LENGTH:
                 incl = True
         response[BODY_LENGTH] = body_length
-    send("You said: "+s+"\n")
+    send("You said: "+dict_to_fixmsg(s)+"\n")
 
 def logon(fix_dict):
-    logged_in.append(fix_dict[SENDER])
-    print(f"LOGGED ON: {fix_dict[SENDER]}")
+    logged_in[fix_dict[SENDER]] = fix_dict[USERNAME]
+    print(f"LOGGED ON: {fix_dict[USERNAME]}")
     return cc(fix_dict)
 
 def logout(fix_dict):
-    logged_in = [v for v in logged_in if v is not fix_dict[SENDER]]
+    logged_in.pop(fix_dict[SENDER])
     print(f"LOGGED OUT: {fix_dict[SENDER]}")
-    return cc(fix_dict)
+    r_dict = cc(fix_dict)
+    r_dict.pop(PASSWORD)
+    return r_dict
 
 async def main():
     while True:

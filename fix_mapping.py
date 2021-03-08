@@ -3,6 +3,8 @@ CHECKSUM = '10'
 MSG_TYPE = '35'
 SENDER = '49'
 RECEIVER = '56'
+USERNAME = '553'
+PASSWORD = '554'
 
 MSG_TYPES = {
     '0': "heartbeat",
