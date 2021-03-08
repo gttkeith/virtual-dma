@@ -1,14 +1,18 @@
 import asyncio
 import socket
+from fix_mapping import *
 
+# FIX formatting params
 SOH = '^'
 STX = '='
 
-TCP_IP_PORT = ('127.0.0.1', 4213)
+TCP_IP_PORT = ('127.0.0.1', 4206)
 BUFFER_SIZE = 256
 MAX_CONNECTIONS = 1
 
 pending_msgs = []
+received = []
+logged_in = []
 
 async def receive():
     s = ''
@@ -18,21 +22,52 @@ async def receive():
         pass
     if s:
         pending_msgs.append(s)
+        received.append(s)
         print("RECEIVED: "+s)
 
 def send(s):
     conn.send(str.encode(str(s)))
 
-async def simple_reply(s):
-    s = str(s)
+async def execute_fix(s):
+    s_dict = fixmsg_to_dict(s)
+    response = exec(MSG_TYPES[s_dict[MSG_TYPE]]+'('+str(s_dict)+')')
+    if not response.get(BODY_LENGTH): # autofill body length
+        body_length = 0
+        incl = False
+        for k,v in response.items():
+            if k == CHECKSUM:
+                incl = False
+            if incl:
+                body_length += len(SOH)+len(STX)+len(k)+len(v)
+            if k == BODY_LENGTH:
+                incl = True
+        response[BODY_LENGTH] = body_length
     send("You said: "+s+"\n")
-    print("Replied:", s)
+
+def logon(fix_dict):
+    logged_in.append(fix_dict[SENDER])
+    print(f"LOGGED ON: {fix_dict[SENDER]}")
+    return cc(fix_dict)
+
+def logout(fix_dict):
+    logged_in = [v for v in logged_in if v is not fix_dict[SENDER]]
+    print(f"LOGGED OUT: {fix_dict[SENDER]}")
+    return cc(fix_dict)
 
 async def main():
     while True:
         await receive()
         if len(pending_msgs)>0:
-            await simple_reply(pending_msgs.pop(0))
+            await execute_fix(pending_msgs.pop(0))
+
+def cc(fix_dict, receiver=None):
+    cc_dict = fix_dict.copy()
+    cc_dict[SENDER] = fix_dict[RECEIVER]
+    if receiver:
+        cc_dict[RECEIVER] = receiver
+    else:
+        cc_dict[RECEIVER] = fix_dict[SENDER]
+    return cc_dict
 
 def dict_to_fixmsg(fix_dict):
     fix_str = ''
@@ -45,13 +80,15 @@ def fixmsg_to_dict(fix_str):
         fix_str = fix_str[:-len(SOH)]
     return dict(s.split(STX) for s in fix_str.split(SOH))
 
-server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server.bind(TCP_IP_PORT)
-server.listen(MAX_CONNECTIONS)
-conn, addr = server.accept()
 
-print('Server IP:', addr[0])
-print('Server Port:', addr[1])
+if __name__ == "__main__":
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server.bind(TCP_IP_PORT)
+    server.listen(MAX_CONNECTIONS)
+    conn, addr = server.accept()
 
-asyncio.get_event_loop().create_task(main())
-asyncio.get_event_loop().run_forever()
+    print('Server IP:', addr[0])
+    print('Server Port:', addr[1])
+
+    asyncio.get_event_loop().create_task(main())
+    asyncio.get_event_loop().run_forever()

@@ -1,3 +1,9 @@
+BODY_LENGTH = '9'
+CHECKSUM = '10'
+MSG_TYPE = '35'
+SENDER = '49'
+RECEIVER = '56'
+
 MSG_TYPES = {
     '0': "heartbeat",
     '1': "test_request",
