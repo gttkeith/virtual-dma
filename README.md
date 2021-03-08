@@ -13,8 +13,6 @@ An example of a sample login and the resulting ack, on port 4206:
 
 ```bash
 T2-MBP% telnet localhost 4206
-Trying ::1...
-telnet: connect to address ::1: Connection refused
 Trying 127.0.0.1...
 Connected to localhost.
 Escape character is '^]'.
