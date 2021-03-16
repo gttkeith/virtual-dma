@@ -13,6 +13,7 @@ MAX_CONNECTIONS = 1
 pending_msgs = []
 received = []
 logged_in = {}
+markets = {}
 
 async def receive():
     s = ''
@@ -57,7 +58,8 @@ def logout(fix_dict):
     return r_dict
 
 def order(fix_dict):
-    print(f"NEW ORDER ({fix_dict[CL_ORD_ID]}): {SUBTYPE_MAP[SIDE][fix_dict[SIDE]]} {fix_dict[QTY]}x of {fix_dict[SECURITY_ID]} @ {fix_dict[CURRENCY]}{fix_dict[{PRICE}]}, {SUBTYPE_MAP[TIME_IN_FORCE][fix_dict[TIME_IN_FORCE]]}")
+    print(f"NEW ORDER ({fix_dict[CL_ORD_ID]}): {SUBTYPE_MAP[SIDE][fix_dict[SIDE]]} {fix_dict[QTY]}x of {fix_dict[SECURITY_ID]} @ {fix_dict[CURRENCY]}{fix_dict[PRICE]}, {SUBTYPE_MAP[TIME_IN_FORCE][fix_dict[TIME_IN_FORCE]]}")
+    markets[fix_dict[SECURITY_ID]][fix_dict[SIDE]].append(float(fix_dict[PRICE]))
     return cc(fix_dict)
 
 async def main():
