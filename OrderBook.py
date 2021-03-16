@@ -42,7 +42,7 @@ async def execute_fix(s):
             if k == BODY_LENGTH:
                 incl = True
         response[BODY_LENGTH] = body_length
-    send("You said: "+dict_to_fixmsg(s)+"\n")
+    send(dict_to_fixmsg(s)+"\n")
 
 def logon(fix_dict):
     logged_in[fix_dict[SENDER]] = fix_dict[USERNAME]
@@ -55,6 +55,10 @@ def logout(fix_dict):
     r_dict = cc(fix_dict)
     r_dict.pop(PASSWORD)
     return r_dict
+
+def order(fix_dict):
+    print(f"NEW ORDER ({fix_dict[CL_ORD_ID]}): {SUBTYPE_MAP[SIDE][fix_dict[SIDE]]} {fix_dict[QTY]}x of {fix_dict[SECURITY_ID]} @ {fix_dict[CURRENCY]}{fix_dict[{PRICE}]}, {SUBTYPE_MAP[TIME_IN_FORCE][fix_dict[TIME_IN_FORCE]]}")
+    return cc(fix_dict)
 
 async def main():
     while True:

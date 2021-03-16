@@ -1,8 +1,19 @@
+ACCOUNT = '1'
 BODY_LENGTH = '9'
 CHECKSUM = '10'
+CL_ORD_ID = '11'
+CURRENCY = '15'
+EXEC_INST = '18'
 MSG_TYPE = '35'
+ORD_TYPE = '40'
+PRICE = '44'
+SECURITY_ID = '48'
 SENDER = '49'
+QTY = '53'
+SIDE = '54'
+SYMBOL = '55'
 RECEIVER = '56'
+TIME_IN_FORCE = '59'
 USERNAME = '553'
 PASSWORD = '554'
 
@@ -21,7 +32,7 @@ MSG_TYPES = {
     'B': "news",
     'C': "email",
     'D': "order_single",
-    'E': "order__list",
+    'E': "order_list",
     'F': "order_cancel_request",
     'G': "order_cancel_replace_request",
     'H': "order_status_request",
@@ -53,4 +64,21 @@ MSG_TYPES = {
     'k': "bid_request",
     'l': "bid_response",
     'm': "list_strike_price"
+}
+
+SUBTYPE_MAP = {
+    '54': {
+        '1': 'Buy',
+        '2': 'Sell'
+    },
+    '59': {
+        '0': 'Day',
+        '1': 'GTC',
+        '2': 'At Open',
+        '3': 'IOC',
+        '4': 'FOK',
+        '5': 'GTX',
+        '6': 'GTD',
+        '7': 'At Close'
+    }
 }
